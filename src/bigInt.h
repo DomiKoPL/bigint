@@ -95,13 +95,13 @@ void bigInt_assign(BigInt *big_int, const BigInt *value);
 /// \brief Assign int value to big_int
 ///
 ////////////////////////////////////////////////////////////
-void bigInt_assigni(BigInt *big_int,const int value);
+void bigInt_assigni(BigInt *big_int, const int value);
 
 ////////////////////////////////////////////////////////////
 /// \brief Assign long long value to big_int
 ///
 ////////////////////////////////////////////////////////////
-void bigInt_assignll(BigInt *big_int,const long long value);
+void bigInt_assignll(BigInt *big_int, const long long value);
 
 ////////////////////////////////////////////////////////////
 /// \brief Assign char* value to big_int
@@ -131,6 +131,24 @@ void bigInt_println(const BigInt *big_int);
 /// \brief return big_int plus int value
 ///
 ////////////////////////////////////////////////////////////
-BigInt *bigInt_addi(const BigInt *big_int,const int value);
+BigInt *bigInt_addi(const BigInt *big_int, const int value);
+
+////////////////////////////////////////////////////////////
+/// \brief return big_int plus long long value
+///
+////////////////////////////////////////////////////////////
+BigInt *bigInt_addll(const BigInt *big_int, const long long value);
+
+////////////////////////////////////////////////////////////
+/// \brief return big_int substract int value
+///
+////////////////////////////////////////////////////////////
+BigInt *bigInt_subi(const BigInt *big_int, const int value);
+
+////////////////////////////////////////////////////////////
+/// \brief return big_int substract long long value
+///
+////////////////////////////////////////////////////////////
+BigInt *bigInt_subll(const BigInt *big_int, const long long value);
 
 #endif // BIG_INT_H

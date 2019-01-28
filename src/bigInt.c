@@ -7,7 +7,7 @@
 #include <string.h>
 
 ////////////////////////////////////////////////////////////
-/// This function uses case-insensitive comparisons.
+/// Base of bigInt
 ///
 ////////////////////////////////////////////////////////////
 const int bigInt_base = 1000000000;
@@ -196,11 +196,78 @@ void bigInt_println(const BigInt *big_int)
 	printf("\n");
 }
 
-BigInt *bigInt_addi(const BigInt *big_int, int value)
+BigInt *bigInt_addi(const BigInt *big_int, const int value)
 {
+	if (value < 0)
+	{
+		return bigInt_subi(big_int, -value);
+	}
+
 	BigInt *res = bigInt_copy(big_int);
 
-	//TODO :make add int
+	int carry = value;
+	for (int i = 0; i < res->len; i++)
+	{
+		carry += res->arr[i];
+		res->arr[i] = carry % bigInt_base;
+		carry /= bigInt_base;
+	}
+
+	if (carry > 0)
+	{
+		int *carr = (int *)malloc((res->len + 1) * sizeof(int));
+		memcpy(carr, big_int->arr, res->len * sizeof(int));
+		carr[res->len] = carry;
+		res->arr = carr;
+		res->len = res->len + 1;
+	}
 
 	return res;
+}
+
+BigInt *bigInt_addll(const BigInt *big_int, const long long value)
+{
+	if (value < 0)
+	{
+		return bigInt_subll(big_int, -value);
+	}
+
+	BigInt *res = bigInt_copy(big_int);
+
+	long long carry = value;
+	for (int i = 0; i < res->len; i++)
+	{
+		carry += res->arr[i];
+		res->arr[i] = carry % bigInt_base;
+		carry /= bigInt_base;
+	}
+
+	while (carry > 0)
+	{
+		int *carr = (int *)malloc((res->len + 1) * sizeof(int));
+		memcpy(carr, big_int->arr, res->len * sizeof(int));
+		carr[res->len] = carry;
+		res->arr = carr;
+		res->len = res->len + 1;
+		carry /= bigInt_base;
+	}
+
+	return res;
+}
+BigInt *bigInt_subi(const BigInt *big_int, const int value)
+{
+	if (value < 0)
+	{
+		return bigInt_addi(big_int, -value);
+	}
+	//TODO
+}
+
+BigInt *bigInt_subll(const BigInt *big_int, const long long value)
+{
+	if (value < 0)
+	{
+		return bigInt_addll(big_int, -value);
+	}
+	//TODO
 }

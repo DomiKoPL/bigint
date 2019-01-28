@@ -23,6 +23,10 @@ int main(int argc, char const *argv[])
 #define TEST_CONVERSIONS
 #endif
 
+#if 1
+#define TEST_ADD
+#endif
+
 void test_print()
 {
 #if defined(TEST_PRINT)
@@ -97,11 +101,25 @@ void test_conversions()
 #endif // TEST_CONVERSIONS
 }
 
+void test_add()
+{
+#if defined(TEST_ADD)
+	printf("Rozpoczynam testowanie dodawania.\n");
+
+	BigInt *a = bigInt_constructori(99999999);
+	BigInt *b = bigInt_addi(a, 12141);
+	bigInt_println(b);
+
+	printf("Testowanie dodawania zakończone sukcesem.\n");
+#endif // TEST_ADD
+}
+
 void test()
 {
 	printf("Rozpoczynam potęzne testowanie.\n");
 	test_print();
 	test_copy();
 	test_conversions();
+	test_add();
 	printf("Poteżne testowanie zakończone sukcesem.\n");
 }
