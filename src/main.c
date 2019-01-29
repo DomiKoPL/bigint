@@ -31,6 +31,10 @@ int main(int argc, char const *argv[])
 #define TEST_COMPARE
 #endif
 
+#if 0
+#define TEST_MULT
+#endif
+
 void test_print()
 {
 #if defined(TEST_PRINT)
@@ -176,7 +180,48 @@ void test_compare()
 	bigint_println(c);
 	printf("%d\n", bigint_compare(a, c));
 	printf("Testowanie porownywania zakonczone sukcesem.\n");
-#endif
+#endif // TEST_COMPARE
+}
+
+void test_mult()
+{
+#if defined(TEST_MULT)
+	printf("Rozpoczynam testowanie mnozenia.\n");
+	{
+		Bigint *a = bigint_constructorstr("0");
+		Bigint *b = bigint_constructorstr("1000");
+		Bigint *c = bigint_mult(a, b);
+		bigint_println(c);
+	}
+	{
+		const char *aa = "12", *bb = "-12";
+		printf("%s * %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_mult(a, b);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "2412512512512", *bb = "1251521512";
+		printf("%s * %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_mult(a, b);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "99999", *bb = "999999";
+		printf("%s * %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_mult(a, b);
+		bigint_println(c);
+	}
+
+	printf("Testowanie mnozenia zakonczone sukcesem.\n");
+#endif // TEST_MULT
 }
 
 void test()
@@ -187,5 +232,6 @@ void test()
 	test_conversions();
 	test_add();
 	test_compare();
+	test_mult();
 	printf("Poteżne testowanie zakończone sukcesem.\n");
 }

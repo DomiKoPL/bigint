@@ -237,4 +237,10 @@ Bigint *bigint_subll(const Bigint *big_int, const long long value);
 ////////////////////////////////////////////////////////////
 Bigint *bigint_substr(const Bigint *big_int, const char *value);
 
+////////////////////////////////////////////////////////////
+/// \brief return a * b in time O(a.len * b.len)
+///
+////////////////////////////////////////////////////////////
+Bigint *bigint_mult(const Bigint *a, const Bigint *b);
+
 #endif // BIG_INT_H

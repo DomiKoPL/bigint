@@ -318,7 +318,7 @@ Bigint *bigint_add(const Bigint *big_int, const Bigint *value)
 		}
 
 		Bigint *res = bigint_constructor();
-		res->arr = (Bigint *)malloc(max_len * sizeof(int));
+		res->arr = (int *)malloc(max_len * sizeof(int));
 		res->len = max_len;
 		res->sign = PLUS;
 
@@ -431,4 +431,47 @@ Bigint *bigint_subll(const Bigint *big_int, const long long value)
 Bigint *bigint_substr(const Bigint *big_int, const char *value)
 {
 	return bigint_sub(big_int, bigint_constructorstr(value));
+}
+
+Bigint *bigint_mult(const Bigint *a, const Bigint *b)
+{
+	Bigint *res = bigint_constructor();
+
+	if (bigint_is_zero(a) || bigint_is_zero(b))
+	{
+		return res;
+	}
+
+	if (a->sign != b->sign)
+	{
+		res->sign = MINUS;
+	}
+
+	int new_len = a->len * b->len + 1;
+	res->len = new_len;
+	res->arr = (int *)malloc(new_len * sizeof(int));
+
+	for (int i = 0; i < a->len; i++)
+	{
+		for (int j = 0; j < b->len; j++)
+		{
+			long long temp = res->arr[i + j];
+			temp += 1ll * a->arr[i] * b->arr[j];
+			res->arr[i + j] = temp % bigint_base;
+			temp /= bigint_base;
+			res->arr[i + j + 1] += temp;
+		}
+	}
+
+	for (int i = 0; i < res->len; i++)
+	{
+		if (res->arr[i] > bigint_base)
+		{
+			res->arr[i + 1] += res->arr[i] / bigint_base;
+			res->arr[i] %= bigint_base;
+		}
+	}
+
+	bigint_trim(res);
+	return res;
 }
