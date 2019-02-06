@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#include "fft.h"
 
 ////////////////////////////////////////////////////////////
 /// Base of Bigint
@@ -63,6 +65,16 @@ Bigint *bigint_copy(const Bigint *big_int)
 	for (int i = 0; i < big_int->len; i++)
 		copy->arr[i] = big_int->arr[i];
 	return copy;
+}
+
+void bigint_resize(Bigint *big_int, const int new_size)
+{
+	big_int->len = new_size;
+	big_int->arr = (int *)malloc(new_size * sizeof(int));
+	for (int i = 0; i < new_size; i++)
+	{
+		big_int->arr[i] = 0;
+	}
 }
 
 void bigint_assign(Bigint *big_int, const Bigint *value)
@@ -206,8 +218,11 @@ void bigint_trim(Bigint *big_int)
 		new_size--;
 	}
 
-	big_int->len = new_size;
-	free(big_int->arr[new_size]);
+	if (big_int->len > new_size)
+	{
+		big_int->len = new_size;
+		big_int = bigint_copy(big_int);
+	}
 }
 
 Bigint *bigint_abs(const Bigint *big_int)
@@ -237,7 +252,7 @@ Bigint *bigint_minus(const Bigint *big_int)
 	return res;
 }
 
-bool *bigint_is_zero(const Bigint *big_int)
+bool bigint_is_zero(const Bigint *big_int)
 {
 	if (bigint_comparei(big_int, 0) == EQUAL)
 	{
@@ -395,6 +410,8 @@ Bigint *bigint_add(const Bigint *big_int, const Bigint *value)
 		bigint_trim(res);
 		return res;
 	}
+
+	return bigint_constructor();
 }
 
 Bigint *bigint_addi(const Bigint *big_int, const int value)
@@ -474,4 +491,113 @@ Bigint *bigint_mult(const Bigint *a, const Bigint *b)
 
 	bigint_trim(res);
 	return res;
+}
+
+Bigint *bigint_multi(const Bigint *a, const int b)
+{
+	return bigint_mult(a, bigint_constructori(b));
+}
+
+Bigint *bigint_multll(const Bigint *a, const long long b)
+{
+	return bigint_mult(a, bigint_constructorll(b));
+}
+
+Bigint *bigint_multfast(const Bigint *a, const Bigint *b)
+{
+	Bigint *res = bigint_constructor();
+
+	fft_mult(a->arr, a->len, b->arr, b->len, &(res->arr), &(res->len), bigint_base);
+
+	if (bigint_comparei(res, 0) == EQUAL)
+		res->sign = PLUS;
+	else
+		res->sign = a->sign * b->sign;
+	bigint_trim(res);
+
+	return res;
+}
+
+Bigint *bigint_divmod(const Bigint *a, const Bigint *b, bool type)
+{
+	int norm = bigint_base / (b->arr[b->len - 1] + 1);
+	Bigint *a1 = bigint_multi(bigint_abs(a), norm);
+	Bigint *b1 = bigint_multi(bigint_abs(b), norm);
+	Bigint *q, *r;
+
+	q = bigint_constructor();
+	r = bigint_constructor();
+
+	q->sign = PLUS;
+	bigint_resize(q, a->len);
+
+	for (int i = a1->len - 1; i >= 0; i--)
+	{
+		r = bigint_multi(r, bigint_base);
+		r = bigint_addi(r, a1->arr[i]);
+
+		int s1 = r->len <= b1->len ? 0 : r->arr[b1->len];
+		int s2 = r->len <= b1->len - 1 ? 0 : r->arr[b1->len - 1];
+		int d = (1ll * bigint_base * s1 + s2) / b1->arr[b1->len - 1];
+
+		r = bigint_sub(r, bigint_multi(b1, d));
+		while (bigint_comparei(r, 0) == SMALLER)
+		{
+			r = bigint_add(r, b1);
+			d--;
+		}
+
+		q->arr[i] = d;
+	}
+
+	q->sign = a1->sign * b1->sign;
+	r->sign = a1->sign;
+
+	bigint_trim(q);
+	bigint_trim(r);
+
+	if (type == 0)
+	{
+		return q;
+	}
+	else if (type == 1)
+	{
+		return bigint_divi(r, norm);
+	}
+
+	// WRONG TYPE
+	return bigint_constructor();
+}
+
+Bigint *bigint_div(const Bigint *a, const Bigint *b)
+{
+	return bigint_divmod(a, b, 0);
+}
+
+Bigint *bigint_divi(const Bigint *a, const int b)
+{
+	Bigint *res = bigint_copy(a);
+	int value = b;
+	if (value < 0)
+	{
+		res = bigint_minus(res);
+		value = -value;
+	}
+
+	long long carry = 0;
+	for (int i = res->len - 1; i >= 0; i--)
+	{
+		carry *= bigint_base;
+		carry += res->arr[i];
+		res->arr[i] = carry / value;
+		carry %= value;
+	}
+
+	bigint_trim(res);
+	return res;
+}
+
+Bigint *bigint_mod(const Bigint *a, const Bigint *b)
+{
+	return bigint_divmod(a, b, 1);
 }

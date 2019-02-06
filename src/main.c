@@ -11,6 +11,10 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
+#if 1
+#define TEST
+#endif
+
 #if 0
 #define TEST_PRINT
 #endif
@@ -33,6 +37,14 @@ int main(int argc, char const *argv[])
 
 #if 0
 #define TEST_MULT
+#endif
+
+#if 0
+#define TEST_DIV
+#endif
+
+#if 1
+#define TEST_MULT_FAST
 #endif
 
 void test_print()
@@ -114,7 +126,7 @@ void test_add()
 #if defined(TEST_ADD)
 	printf("Rozpoczynam testowanie dodawania.\n");
 
-	int x = 999999999, y = 12141;
+	int x = 1000000000, y = 0;
 	printf("%d + %d\n", x, y);
 	Bigint *a = bigint_constructori(x);
 	Bigint *b = bigint_addi(a, y);
@@ -157,9 +169,9 @@ void test_add()
 	}
 
 	{
-		printf("1001 - 1001 = ");
-		Bigint *c1 = bigint_constructorstr("1001");
-		Bigint *d1 = bigint_substr(c1, "1001");
+		printf("1000000000 + 1000000000 = \n");
+		Bigint *c1 = bigint_constructorstr("1000000000");
+		Bigint *d1 = bigint_addstr(c1, "1000000000");
 		bigint_println(d1);
 	}
 	printf("Testowanie dodawania zakończone sukcesem.\n");
@@ -220,12 +232,94 @@ void test_mult()
 		bigint_println(c);
 	}
 
+	{
+		const char *aa = "99999", *bb = "1000000000";
+		printf("%s * %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_mult(a, b);
+		bigint_println(c);
+	}
+
 	printf("Testowanie mnozenia zakonczone sukcesem.\n");
 #endif // TEST_MULT
 }
 
+void test_div()
+{
+#if defined(TEST_DIV)
+	printf("Rozpoczynam testowanie dzielenia.\n");
+
+	{
+		const char *aa = "40000000000010";
+		int bb = 2;
+		printf("%s / %d = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *c = bigint_divi(a, bb);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "1000124124142000000000", *bb = "21421412412";
+		printf("%s / %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_div(a, b);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "100000000000102", *bb = "100000000000001";
+		printf("%s %% %s = ", aa, bb);
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		Bigint *c = bigint_mod(a, b);
+		bigint_println(c);
+	}
+
+	printf("Testowanie dzielenia zakonczone sukcesem.\n");
+#endif
+}
+
+void test_mult_fast()
+{
+#if defined(TEST_MULT_FAST)
+	printf("Rozpoczynam testowanie szybkiego mnozenia.\n");
+
+	{
+		const char *aa = "100", *bb = "2";
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		printf("%s * %s =\n", aa, bb);
+		Bigint *c = bigint_multfast(a, b);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "100000", *bb = "124124";
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		printf("%s * %s =\n", aa, bb);
+		Bigint *c = bigint_multfast(a, b);
+		bigint_println(c);
+	}
+
+	{
+		const char *aa = "-100000", *bb = "0";
+		Bigint *a = bigint_constructorstr(aa);
+		Bigint *b = bigint_constructorstr(bb);
+		printf("%s * %s =\n", aa, bb);
+		Bigint *c = bigint_multfast(a, b);
+		bigint_println(c);
+	}
+
+	printf("Testowanie szybkiego mnozenia zakonczone sukcesem.\n");
+#endif
+}
+
 void test()
 {
+#if defined(TEST)
 	printf("Rozpoczynam potęzne testowanie.\n");
 	test_print();
 	test_copy();
@@ -233,5 +327,8 @@ void test()
 	test_add();
 	test_compare();
 	test_mult();
+	test_div();
+	test_mult_fast();
 	printf("Poteżne testowanie zakończone sukcesem.\n");
+#endif
 }
