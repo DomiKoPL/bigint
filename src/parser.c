@@ -5,8 +5,99 @@
 #include <string.h>
 #include <stdio.h>
 
+int pareser_check(char *str)
+{
+    int len = 0;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ')
+        {
+            len++;
+        }
+    }
+
+    char *s = malloc(len + 1);
+    for (int i = 0, j = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ')
+        {
+            s[j++] = str[i];
+        }
+    }
+
+    for (int i = 0; i < strlen(s); i++)
+    {
+        char c = s[i];
+        if (c != '(' && c != ')' && c != '-' && c != '+' && c != '*' && c != '/')
+        {
+            if (!(c >= '0' && c <= '9'))
+            {
+                return 0;
+            }
+        }
+
+        if (c == '*' || c == '/')
+        {
+            if (i > 0 && (s[i - 1] == '*' || s[i - 1] == '/' || s[i - 1] == '(' || s[i - 1] == ')'))
+                return 0;
+            if (i + 1 < strlen(s) && (s[i + 1] == '*' || s[i + 1] == '/' || s[i + 1] == '(' || s[i + 1] == ')'))
+                return 0;
+        }
+
+        if (c == '(' && i > 0)
+        {
+            if (s[i - 1] >= '0' && s[i - 1] <= '9')
+                return 0;
+        }
+
+        if (c == ')' && i + 1 < strlen(s))
+        {
+            if (s[i + 1] >= '0' && s[i + 1] <= '9')
+                return 0;
+        }
+    }
+
+    int bracket_balance = 0;
+    for (int i = 0; i < strlen(s); i++)
+    {
+        if (s[i] == '(')
+            bracket_balance++;
+        else if (s[i] == ')')
+            bracket_balance--;
+    }
+
+    if (bracket_balance != 0)
+        return 0;
+
+    return 1;
+}
+
+Bigint *parse(char *str)
+{
+    int len = 0;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ')
+        {
+            len++;
+        }
+    }
+
+    char *s = malloc(len + 1);
+    for (int i = 0, j = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ')
+        {
+            s[j++] = str[i];
+        }
+    }
+
+    return parse_expression(s);
+}
+
 Bigint *parse_expression(char *str)
 {
+    // printf("%s\n", str);
     if (strlen(str) == 0)
         return bigint_constructori(0);
 
@@ -21,6 +112,12 @@ Bigint *parse_expression(char *str)
 
         if (str[i] == '+' && bracket_balance == 0)
         {
+            if (i > 0 && (str[i - 1] == '*' || str[i - 1] == '/'))
+                continue;
+
+            if (i + 1 < strlen(str) && (str[i + 1] == '*' || str[i + 1] == '/'))
+                continue;
+
             int size_l = i;
             int size_p = strlen(str) - 1 - i;
             char *l = malloc(size_l + 1);
@@ -47,6 +144,12 @@ Bigint *parse_expression(char *str)
 
         if (str[i] == '-' && bracket_balance == 0)
         {
+            if (i > 0 && (str[i - 1] == '*' || str[i - 1] == '/'))
+                continue;
+
+            if (i < strlen(str) && (str[i + 1] == '*' || str[i + 1] == '/'))
+                continue;
+
             int size_l = i;
             int size_p = strlen(str) - 1 - i;
             char *l = malloc(size_l + 1);

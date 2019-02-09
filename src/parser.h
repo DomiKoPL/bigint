@@ -5,6 +5,10 @@
 ////////////////////////////////////////////////////////////
 #include "bigint.h"
 
+int pareser_check(char *str);
+
+Bigint *parse(char *str);
+
 Bigint *parse_expression(char *str);
 
 #endif // PARSER_H
