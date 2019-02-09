@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+
+/// Base of Bigint
+static const int bigint_base = 1000000000;
+
 enum
 {
 	PLUS = 1,
@@ -26,6 +30,9 @@ typedef struct _Bigint
 	int len;
 } Bigint;
 
+////////////////////////////////////////////////////////////
+// bigintc.c
+////////////////////////////////////////////////////////////
 Bigint *bigint_constructor();
 
 Bigint *bigint_constructori(const int value);
@@ -48,14 +55,15 @@ void bigint_assignll(Bigint *big_int, const long long value);
 
 void bigint_assignstr(Bigint *big_int, const char *value);
 
+///erase leading zeros
+void bigint_trim(Bigint *big_int);
+
+
 char *bigint_tostring(const Bigint *big_int);
 
 void bigint_print(const Bigint *big_int);
 
 void bigint_println(const Bigint *big_int);
-
-///erase leading zeros
-void bigint_trim(Bigint *big_int);
 
 Bigint *bigint_abs(const Bigint *big_int);
 
@@ -76,6 +84,9 @@ short bigint_comparell(const Bigint *A, const long long B);
 ///return SMALLER if A < B, EQUAL if A == B, BIGGER if A > B
 short bigint_comparestr(const Bigint *A, const char *B);
 
+////////////////////////////////////////////////////////////
+// biginto.c
+////////////////////////////////////////////////////////////
 Bigint *bigint_add(const Bigint *big_int, const Bigint *value);
 
 Bigint *bigint_addi(const Bigint *big_int, const int value);
