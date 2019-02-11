@@ -22,7 +22,8 @@ void test()
 		scanf("%d", &x);
 		if (x == 0)
 			break;
-		printf("Type expresion:\n");
+
+		printf("Type expresion:\ne.g.:1 + 3 * (1 - 7) + 8 / 2\n");
 		scanf(" %[^\n]", s);
 
 		if (pareser_check(s) == 0)
